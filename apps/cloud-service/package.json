@@ -1,0 +1,51 @@
+{
+  "name": "@cloude-service/cloud-service",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "cloud-service",
+    "targets": {
+      "build": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "webpack-cli build",
+          "args": [
+            "node-env=production"
+          ]
+        },
+        "configurations": {
+          "development": {
+            "args": [
+              "node-env=development"
+            ]
+          }
+        }
+      },
+      "serve": {
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "cloud-service:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "cloud-service:build:development"
+          },
+          "production": {
+            "buildTarget": "cloud-service:build:production"
+          }
+        }
+      },
+      "docker-build": {
+        "dependsOn": [
+          "build"
+        ],
+        "command": "docker build -f apps/cloud-service/Dockerfile . -t cloud-service"
+      }
+    }
+  }
+}
